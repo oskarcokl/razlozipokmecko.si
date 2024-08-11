@@ -1,14 +1,20 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 	"regexp"
 	"strings"
 	"text/template"
-    "path/filepath"
+
+	"github.com/joho/godotenv"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 
@@ -21,7 +27,6 @@ type Page struct {
 const EDIT_PATH = "/edit/"
 const VIEW_PATH = "/view/"
 const SAVE_PATH = "/save/"
-const TEMPLATE_FOLDER = "tmpl/"
 
 
 var pattern = filepath.Join("tmpl", "*.html")
@@ -30,6 +35,43 @@ var validPath = regexp.MustCompile("^/(edit|save|view)/([a-zA-Z0-9]+)$")
 
 
 func main() {
+    if err := godotenv.Load(); err != nil {
+        log.Println("No .env file found")
+    }
+
+    uri := os.Getenv("MONGODB_URI")
+
+    client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(uri))
+
+    if err != nil {
+        panic(err)
+    }
+
+    coll := client.Database("razlozipokmecko").Collection("explanations")
+
+    cur, err := coll.Find(context.TODO(), bson.D{})
+
+    if err == mongo.ErrNoDocuments {
+        fmt.Printf("No documents found")
+        return
+    }
+
+    if err != nil {
+        panic(err)
+    }
+
+    defer cur.Close(context.TODO())
+
+    var results []bson.M
+
+    if err = cur.All(context.TODO(), &results); err != nil {
+        log.Fatal(err)
+    }
+
+    for _, result := range results {
+        fmt.Println(result)
+    }
+
     http.HandleFunc(VIEW_PATH, makeHandler(viewHandler))
     http.HandleFunc(EDIT_PATH, makeHandler(editHandler))
     http.HandleFunc(SAVE_PATH, makeHandler(saveHandler))
