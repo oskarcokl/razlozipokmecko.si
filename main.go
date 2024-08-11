@@ -8,6 +8,7 @@ import (
 	"regexp"
 	"strings"
 	"text/template"
+    "path/filepath"
 )
 
 
@@ -20,9 +21,11 @@ type Page struct {
 const EDIT_PATH = "/edit/"
 const VIEW_PATH = "/view/"
 const SAVE_PATH = "/save/"
+const TEMPLATE_FOLDER = "tmpl/"
 
 
-var templates = template.Must(template.ParseFiles("edit.html", "view.html"))
+var pattern = filepath.Join("tmpl", "*.html")
+var templates = template.Must(template.ParseGlob(pattern))
 var validPath = regexp.MustCompile("^/(edit|save|view)/([a-zA-Z0-9]+)$")
 
 
