@@ -93,7 +93,7 @@ func editHandler(w http.ResponseWriter, r *http.Request, title string, coll *mon
 func saveHandler(w http.ResponseWriter, r *http.Request, title string, coll *mongo.Collection) {
     body := r.FormValue("body")
     p := &Page{Title: title, Body: []byte(body)}
-    err := p.savePage()
+    err := p.savePage(coll)
     if err != nil {
         http.Error(w, err.Error(), http.StatusInternalServerError)
         return
@@ -121,7 +121,24 @@ func loadPage(title string, coll *mongo.Collection) (*Page, error) {
     return &result, nil
 }
 
-func (p *Page) savePage() error {
-    filename := p.Title + ".txt"
-    return os.WriteFile(filename, p.Body, 0600)
+func (p *Page) savePage(coll *mongo.Collection) error {
+    opts := options.Update().SetUpsert(true)
+    update := bson.D{{"$set", p}}
+    result, err := coll.UpdateOne(context.TODO(), bson.D{{"title", p.Title}}, update, opts)
+
+    if err != nil {
+        log.Fatal(err)
+        return err
+    }
+
+    if result.MatchedCount != 0 {
+        fmt.Println("Matched and replaced existing document")
+        return nil
+    }
+
+    if result.UpsertedCount != 0 {
+        fmt.Printf("Inserted a new document with ID %v\n", result.UpsertedID)
+    }
+
+    return nil
 }
