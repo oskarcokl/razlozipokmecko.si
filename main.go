@@ -27,6 +27,7 @@ type Page struct {
 const EDIT_PATH = "/edit/"
 const VIEW_PATH = "/view/"
 const SAVE_PATH = "/save/"
+const LIST_VIEW_PATH = "/list-view/"
 
 
 var pattern = filepath.Join("tmpl", "*.html")
@@ -38,6 +39,7 @@ func main() {
     http.HandleFunc(VIEW_PATH, makeHandler(viewHandler))
     http.HandleFunc(EDIT_PATH, makeHandler(editHandler))
     http.HandleFunc(SAVE_PATH, makeHandler(saveHandler))
+    http.HandleFunc(LIST_VIEW_PATH, listViewHandler)
     fmt.Println("Server running on port 8000")
     log.Fatal(http.ListenAndServe(":8000", nil))
 }
@@ -65,6 +67,30 @@ func makeHandler(fn func (http.ResponseWriter, *http.Request, string, *mongo.Col
         coll := client.Database("razlozipokmecko").Collection("explanations")
 
         fn(w, r, m[2], coll)
+    }
+}
+
+
+func listViewHandler(w http.ResponseWriter, r *http.Request) {
+    if err := godotenv.Load(); err != nil {
+        log.Println("No .env file found")
+    }
+
+    uri := os.Getenv("MONGODB_URI")
+
+    client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(uri))
+
+    if err != nil {
+        panic(err)
+    }
+
+    coll := client.Database("razlozipokmecko").Collection("explanations")
+
+    pages := loadAllPages(coll)
+
+    err = templates.ExecuteTemplate(w, "list-view.html", pages)
+    if err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
     }
 }
 
@@ -120,6 +146,23 @@ func loadPage(title string, coll *mongo.Collection) (*Page, error) {
 
     return &result, nil
 }
+
+
+func loadAllPages(coll *mongo.Collection) ([]Page) {
+    cur, err := coll.Find(context.TODO(), bson.D{})
+
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    var results []Page
+    if err = cur.All(context.TODO(), &results); err != nil {
+        log.Fatal(err)
+    }
+
+    return results
+}
+
 
 func (p *Page) savePage(coll *mongo.Collection) error {
     opts := options.Update().SetUpsert(true)
