@@ -35,43 +35,6 @@ var validPath = regexp.MustCompile("^/(edit|save|view)/([a-zA-Z0-9]+)$")
 
 
 func main() {
-    if err := godotenv.Load(); err != nil {
-        log.Println("No .env file found")
-    }
-
-    uri := os.Getenv("MONGODB_URI")
-
-    client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(uri))
-
-    if err != nil {
-        panic(err)
-    }
-
-    coll := client.Database("razlozipokmecko").Collection("explanations")
-
-    cur, err := coll.Find(context.TODO(), bson.D{})
-
-    if err == mongo.ErrNoDocuments {
-        fmt.Printf("No documents found")
-        return
-    }
-
-    if err != nil {
-        panic(err)
-    }
-
-    defer cur.Close(context.TODO())
-
-    var results []bson.M
-
-    if err = cur.All(context.TODO(), &results); err != nil {
-        log.Fatal(err)
-    }
-
-    for _, result := range results {
-        fmt.Println(result)
-    }
-
     http.HandleFunc(VIEW_PATH, makeHandler(viewHandler))
     http.HandleFunc(EDIT_PATH, makeHandler(editHandler))
     http.HandleFunc(SAVE_PATH, makeHandler(saveHandler))
@@ -79,31 +42,45 @@ func main() {
     log.Fatal(http.ListenAndServe(":8000", nil))
 }
 
-func makeHandler(fn func (http.ResponseWriter, *http.Request, string)) http.HandlerFunc {
+func makeHandler(fn func (http.ResponseWriter, *http.Request, string, *mongo.Collection)) http.HandlerFunc {
     return func(w http.ResponseWriter, r *http.Request) {
         m := validPath.FindStringSubmatch(r.URL.Path)
         if m == nil {
             http.NotFound(w, r)
             return
         }
-        fn(w, r, m[2])
+
+        if err := godotenv.Load(); err != nil {
+            log.Println("No .env file found")
+        }
+
+        uri := os.Getenv("MONGODB_URI")
+
+        client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(uri))
+
+        if err != nil {
+            panic(err)
+        }
+
+        coll := client.Database("razlozipokmecko").Collection("explanations")
+
+        fn(w, r, m[2], coll)
     }
 }
 
 
-func viewHandler(w http.ResponseWriter, r *http.Request, title string) {
-    p, err := loadPage(title)
+func viewHandler(w http.ResponseWriter, r *http.Request, title string, coll *mongo.Collection) {
+    p, err := loadPage(strings.Join(strings.Split(title, "-"), " "), coll)
     if err != nil {
         http.Redirect(w, r, EDIT_PATH + title, http.StatusFound)
         return
     }
-    p.Title = strings.Join(strings.Split(p.Title, "-"), " ")
     renderTemplate(w, "view", p)
 }
 
 
-func editHandler(w http.ResponseWriter, r *http.Request, title string) {
-    p, err := loadPage(title)
+func editHandler(w http.ResponseWriter, r *http.Request, title string, coll *mongo.Collection) {
+    p, err := loadPage(title, coll)
     if err != nil {
         // if page doesn't exists create one
         p = &Page{Title: title}
@@ -113,7 +90,7 @@ func editHandler(w http.ResponseWriter, r *http.Request, title string) {
 }
 
 
-func saveHandler(w http.ResponseWriter, r *http.Request, title string) {
+func saveHandler(w http.ResponseWriter, r *http.Request, title string, coll *mongo.Collection) {
     body := r.FormValue("body")
     p := &Page{Title: title, Body: []byte(body)}
     err := p.savePage()
@@ -133,14 +110,15 @@ func renderTemplate(w http.ResponseWriter, tmpl string, p *Page) {
 }
 
 
-func loadPage(title string) (*Page, error) {
-    filename := title + ".txt"
-    body, err := os.ReadFile(filename)
+func loadPage(title string, coll *mongo.Collection) (*Page, error) {
+    var result Page
+    err := coll.FindOne(context.TODO(), bson.D{{"title", title}}).Decode(&result)
+
     if err != nil {
         return nil, err
     }
 
-    return &Page{Title: title, Body: body}, nil
+    return &result, nil
 }
 
 func (p *Page) savePage() error {
