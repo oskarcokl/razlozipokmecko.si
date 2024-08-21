@@ -3,6 +3,7 @@ module github.com/oskarcokl/razlozipokmecko.si
 go 1.22.5
 
 require (
+	github.com/a-h/templ v0.2.747 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/joho/godotenv v1.5.1 // indirect
 	github.com/klauspost/compress v1.13.6 // indirect
