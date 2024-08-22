@@ -6,14 +6,13 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"path/filepath"
 	"regexp"
-	"text/template"
 
 	m "github.com/oskarcokl/razlozipokmecko.si/models"
 	"github.com/oskarcokl/razlozipokmecko.si/services"
 	"github.com/oskarcokl/razlozipokmecko.si/tmpl"
 )
+
 
 const EDIT_PATH = "/edit/"
 const VIEW_PATH = "/view/"
@@ -21,8 +20,6 @@ const SAVE_PATH = "/save/"
 const LIST_VIEW_PATH = "/list-view/"
 
 
-var pattern = filepath.Join("tmpl", "*.html")
-var templates = template.Must(template.ParseGlob(pattern))
 var validPath = regexp.MustCompile("^/(edit|save|view)/([a-zA-Z0-9-čžš]+)$")
 
 
@@ -106,12 +103,6 @@ func (h *DefaultHandler) listViewHandler(w http.ResponseWriter, r *http.Request)
     component.Render(context.Background(), w)
 }
 
-func (h *DefaultHandler) renderTemplate(w http.ResponseWriter, tmpl string, p *m.Page) {
-    err := templates.ExecuteTemplate(w, tmpl + ".html", p)
-    if err != nil {
-        http.Error(w, err.Error(), http.StatusInternalServerError)
-    }
-}
 
 func getName(r *http.Request) (string, error) {
 	m := validPath.FindStringSubmatch(r.URL.Path)
