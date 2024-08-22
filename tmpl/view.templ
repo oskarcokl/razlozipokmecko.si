@@ -3,7 +3,7 @@ package tmpl
 templ ViewExplanation(name string, title string, body string) {
     @Wrapper(title) {
         <h1>{title}</h1>
-        <p>[<a href={templ.URL("/edit/" + name)}>edit</a>]</p>
+        <p>[<a href={templ.URL("/edit/" + name)}>uredi</a>]</p>
         <div>{body}</div>
         <p>[<a href={templ.URL("/list-view/")}>nazaj na seznam</a>]</p>
     }

@@ -9,15 +9,20 @@ templ EditExplanation(name string, title string, body string) {
             }
         </style>
 
-        <h1>Editing { title }</h1>
+        <h1>Urejanje { title }</h1>
         <form action={ templ.URL("/save/" + name) }>
             <div>
+                <label for="title">Naslov</label>
                 <textarea name="title" id="title" rows="1" cols="20">{ title }</textarea>
+            </div>
+            <div>
+                <label for="Body">Razlaga</label>
                 <textarea name="body" id="body" rows="20" cols="80">{ body }</textarea>
             </div>
             <div>
-                <input type="submit" value="Save">
+                <input type="submit" value="Shrani">
             </div>
         </form>
+        <p>[<a href={templ.URL("/view/" + name)}>nazaj</a>]</p>
     }
 }
