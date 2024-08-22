@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"strings"
 
 	"github.com/oskarcokl/razlozipokmecko.si/db"
 	m "github.com/oskarcokl/razlozipokmecko.si/models"
@@ -20,9 +21,10 @@ func NewPageService(ms *db.MongoStore) *PageService {
 }
 
 
-func (ps *PageService) LoadPage(title string) (*m.Page, error) {
+func (ps *PageService) LoadPage(name string) (*m.Page, error) {
     var result m.Page
-    err := ps.ms.Coll.FindOne(context.TODO(), bson.D{{"title", title}}).Decode(&result)
+    filter := bson.D{{Key: "name", Value: name}}
+    err := ps.ms.Coll.FindOne(context.TODO(), filter).Decode(&result)
 
     if err != nil {
         return nil, err
@@ -32,26 +34,38 @@ func (ps *PageService) LoadPage(title string) (*m.Page, error) {
 }
 
 
-func (ps *PageService) SavePage(p *m.Page) (error) {
+func (ps *PageService) SavePage(p *m.Page) (*m.Page, error) {
     opts := options.Update().SetUpsert(true)
-    update := bson.D{{"$set", p}}
-    result, err := ps.ms.Coll.UpdateOne(context.TODO(), bson.D{{"title", p.Title}}, update, opts)
+
+    oldName := p.Name
+    name := strings.ToLower(strings.Join(strings.Split(p.Title, " "), "-"))
+
+    if name != oldName {
+        // I guess wi don't really need to check and just overwrite the value
+        // always. But this generally allows us to change a title of an
+        // explanation
+        p.Name = name
+    }
+
+    update := bson.D{{Key: "$set", Value: p}}
+    filter := bson.D{{Key: "name", Value: oldName}}
+    result, err := ps.ms.Coll.UpdateOne(context.TODO(), filter, update, opts)
 
     if err != nil {
         log.Fatal(err)
-        return err
+        return nil, err
     }
 
     if result.MatchedCount != 0 {
         fmt.Println("Matched and replaced existing document")
-        return nil
+        return p, nil
     }
 
     if result.UpsertedCount != 0 {
         fmt.Printf("Inserted a new document with ID %v\n", result.UpsertedID)
     }
 
-    return nil
+    return p, nil
 }
 
 

@@ -1,13 +1,11 @@
 package tmpl
 
-import "strings"
-
 import m "github.com/oskarcokl/razlozipokmecko.si/models"
 
 templ ListView(pages []m.Page) {
     @Wrapper("Razlage") {
         for _, p := range pages {
-            <h2><a href={templ.URL("/view/" + strings.Join(strings.Split(p.Title, " "), "-"))}>{p.Title}</a></h2>
+            <h2><a href={templ.URL("/view/" + p.Name)}>{p.Title}</a></h2>
         }
     }
 }

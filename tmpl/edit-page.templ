@@ -1,11 +1,18 @@
 package tmpl
 
 
-templ EditPage(title string, body string) {
+templ EditPage(name string, title string, body string) {
     @Wrapper(title) {
+        <style>
+            textarea {
+                resize: none
+            }
+        </style>
+
         <h1>Editing { title }</h1>
-        <form action={ templ.URL("/save/" + title) }>
+        <form action={ templ.URL("/save/" + name) }>
             <div>
+                <textarea name="title" id="title" rows="1" cols="20">{ title }</textarea>
                 <textarea name="body" id="body" rows="20" cols="80">{ body }</textarea>
             </div>
             <div>

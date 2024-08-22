@@ -8,7 +8,7 @@ package tmpl
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-func ViewPage(title string, body string) templ.Component {
+func ViewPage(name string, title string, body string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
@@ -55,7 +55,7 @@ func ViewPage(title string, body string) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var4 templ.SafeURL = templ.URL("/edit/" + title)
+			var templ_7745c5c3_Var4 templ.SafeURL = templ.URL("/edit/" + name)
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var4)))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
