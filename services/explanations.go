@@ -12,19 +12,19 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-type PageService struct {
+type ExplanationService struct {
 	ms *db.MongoStore
 }
 
-func NewPageService(ms *db.MongoStore) *PageService {
-	return &PageService{ms: ms}
+func NewPageService(ms *db.MongoStore) *ExplanationService {
+	return &ExplanationService{ms: ms}
 }
 
 
-func (ps *PageService) LoadPage(name string) (*m.Page, error) {
-    var result m.Page
+func (es *ExplanationService) LoadExplanation(name string) (*m.Explanation, error) {
+    var result m.Explanation
     filter := bson.D{{Key: "name", Value: name}}
-    err := ps.ms.Coll.FindOne(context.TODO(), filter).Decode(&result)
+    err := es.ms.Coll.FindOne(context.TODO(), filter).Decode(&result)
 
     if err != nil {
         return nil, err
@@ -34,22 +34,22 @@ func (ps *PageService) LoadPage(name string) (*m.Page, error) {
 }
 
 
-func (ps *PageService) SavePage(p *m.Page) (*m.Page, error) {
+func (es *ExplanationService) SaveExplanation(e *m.Explanation) (*m.Explanation, error) {
     opts := options.Update().SetUpsert(true)
 
-    oldName := p.Name
-    name := strings.ToLower(strings.Join(strings.Split(p.Title, " "), "-"))
+    oldName := e.Name
+    name := strings.ToLower(strings.Join(strings.Split(e.Title, " "), "-"))
 
     if name != oldName {
         // I guess wi don't really need to check and just overwrite the value
         // always. But this generally allows us to change a title of an
         // explanation
-        p.Name = name
+        e.Name = name
     }
 
-    update := bson.D{{Key: "$set", Value: p}}
+    update := bson.D{{Key: "$set", Value: e}}
     filter := bson.D{{Key: "name", Value: oldName}}
-    result, err := ps.ms.Coll.UpdateOne(context.TODO(), filter, update, opts)
+    result, err := es.ms.Coll.UpdateOne(context.TODO(), filter, update, opts)
 
     if err != nil {
         log.Fatal(err)
@@ -58,25 +58,25 @@ func (ps *PageService) SavePage(p *m.Page) (*m.Page, error) {
 
     if result.MatchedCount != 0 {
         fmt.Println("Matched and replaced existing document")
-        return p, nil
+        return e, nil
     }
 
     if result.UpsertedCount != 0 {
         fmt.Printf("Inserted a new document with ID %v\n", result.UpsertedID)
     }
 
-    return p, nil
+    return e, nil
 }
 
 
-func (ps *PageService) LoadAllPages() ([]m.Page) {
-    cur, err := ps.ms.Coll.Find(context.TODO(), bson.D{})
+func (es *ExplanationService) LoadAllExplanations() ([]m.Explanation) {
+    cur, err := es.ms.Coll.Find(context.TODO(), bson.D{})
 
     if err != nil {
         log.Fatal(err)
     }
 
-    var results []m.Page
+    var results []m.Explanation
     if err = cur.All(context.TODO(), &results); err != nil {
         log.Fatal(err)
     }

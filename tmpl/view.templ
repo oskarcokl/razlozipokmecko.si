@@ -1,6 +1,6 @@
 package tmpl
 
-templ ViewPage(name string, title string, body string) {
+templ ViewExplanation(name string, title string, body string) {
     @Wrapper(title) {
         <h1>{title}</h1>
         <p>[<a href={templ.URL("/edit/" + name)}>edit</a>]</p>

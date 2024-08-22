@@ -1,6 +1,6 @@
 package models
 
-type Page struct {
+type Explanation struct {
     Name string
     Title string
     Body []byte

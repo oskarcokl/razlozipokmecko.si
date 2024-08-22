@@ -2,10 +2,10 @@ package tmpl
 
 import m "github.com/oskarcokl/razlozipokmecko.si/models"
 
-templ ListView(pages []m.Page) {
+templ ListView(explanations []m.Explanation) {
     @Wrapper("Razlage") {
-        for _, p := range pages {
-            <h2><a href={templ.URL("/view/" + p.Name)}>{p.Title}</a></h2>
+        for _, e := range explanations {
+            <h2><a href={templ.URL("/view/" + e.Name)}>{e.Title}</a></h2>
         }
     }
 }

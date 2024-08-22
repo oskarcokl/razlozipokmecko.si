@@ -24,13 +24,13 @@ var validPath = regexp.MustCompile("^/(edit|save|view)/([a-zA-Z0-9-čžš]+)$")
 
 
 type DefaultHandler struct {
-	ps *services.PageService
+	es *services.ExplanationService
 }
 
 
-func New(ps *services.PageService) *DefaultHandler {
+func New(es *services.ExplanationService) *DefaultHandler {
 	return &DefaultHandler{
-		ps: ps,
+		es: es,
 	}
 }
 
@@ -52,14 +52,14 @@ func (h *DefaultHandler) viewHandler(w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r)
 	}
 
-    p, err := h.ps.LoadPage(name)
+    e, err := h.es.LoadExplanation(name)
     if err != nil {
         http.Redirect(w, r, EDIT_PATH + name, http.StatusFound)
         return
     }
 
 	// Whos responsibility is rendering templates?
-    component := tmpl.ViewPage(p.Name, p.Title, string(p.Body))
+    component := tmpl.ViewExplanation(e.Name, e.Title, string(e.Body))
     component.Render(context.Background(), w)
 }
 
@@ -69,12 +69,12 @@ func (h *DefaultHandler) editHandler(w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r)
 	}
 
-    p, err := h.ps.LoadPage(name)
+    e, err := h.es.LoadExplanation(name)
     if err != nil {
         // if page doesn't exists create one
-        p = &m.Page{Name: name}
+        e = &m.Explanation{Name: name}
     }
-    component := tmpl.EditPage(p.Name, p.Title, string(p.Body))
+    component := tmpl.EditExplanation(e.Name, e.Title, string(e.Body))
     component.Render(context.Background(), w)
 }
 
@@ -86,20 +86,20 @@ func (h *DefaultHandler) saveHandler(w http.ResponseWriter, r *http.Request) {
 
     body := r.FormValue("body")
     title := r.FormValue("title")
-    p := &m.Page{Name: name, Title: title, Body: []byte(body)}
-    p, err = h.ps.SavePage(p)
+    e := &m.Explanation{Name: name, Title: title, Body: []byte(body)}
+    e, err = h.es.SaveExplanation(e)
     if err != nil {
         http.Error(w, err.Error(), http.StatusInternalServerError)
         return
     }
 
-    http.Redirect(w, r, VIEW_PATH + p.Name, http.StatusFound)
+    http.Redirect(w, r, VIEW_PATH + e.Name, http.StatusFound)
 }
 
 
 func (h *DefaultHandler) listViewHandler(w http.ResponseWriter, r *http.Request) {
-    pages := h.ps.LoadAllPages()
-    component := tmpl.ListView(pages)
+    explanations := h.es.LoadAllExplanations()
+    component := tmpl.ListView(explanations)
     component.Render(context.Background(), w)
 }
 

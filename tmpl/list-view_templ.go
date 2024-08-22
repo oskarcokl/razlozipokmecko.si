@@ -10,7 +10,7 @@ import templruntime "github.com/a-h/templ/runtime"
 
 import m "github.com/oskarcokl/razlozipokmecko.si/models"
 
-func ListView(pages []m.Page) templ.Component {
+func ListView(explanations []m.Explanation) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
@@ -40,12 +40,12 @@ func ListView(pages []m.Page) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			for _, p := range pages {
+			for _, e := range explanations {
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<h2><a href=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				var templ_7745c5c3_Var3 templ.SafeURL = templ.URL("/view/" + p.Name)
+				var templ_7745c5c3_Var3 templ.SafeURL = templ.URL("/view/" + e.Name)
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var3)))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
@@ -55,7 +55,7 @@ func ListView(pages []m.Page) templ.Component {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var4 string
-				templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(p.Title)
+				templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(e.Title)
 				if templ_7745c5c3_Err != nil {
 					return templ.Error{Err: templ_7745c5c3_Err, FileName: `tmpl/list-view.templ`, Line: 8, Col: 63}
 				}
