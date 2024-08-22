@@ -1,0 +1,16 @@
+package tmpl
+
+
+templ EditPage(title string, body string) {
+    @Wrapper(title) {
+        <h1>Editing { title }</h1>
+        <form action={ templ.URL("/save/" + title) }>
+            <div>
+                <textarea name="body" id="body" rows="20" cols="80">{ body }</textarea>
+            </div>
+            <div>
+                <input type="submit" value="Save">
+            </div>
+        </form>
+    }
+}

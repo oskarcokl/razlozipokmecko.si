@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"log"
@@ -12,6 +13,7 @@ import (
 
 	m "github.com/oskarcokl/razlozipokmecko.si/models"
 	"github.com/oskarcokl/razlozipokmecko.si/services"
+	"github.com/oskarcokl/razlozipokmecko.si/tmpl"
 )
 
 const EDIT_PATH = "/edit/"
@@ -61,7 +63,8 @@ func (h *DefaultHandler) viewHandler(w http.ResponseWriter, r *http.Request) {
     }
 
 	// Whos responsibility is rendering templates?
-    h.renderTemplate(w, "view", p)
+    component := tmpl.ViewPage(p.Title, string(p.Body))
+    component.Render(context.Background(), w)
 }
 
 
@@ -77,7 +80,8 @@ func (h *DefaultHandler) editHandler(w http.ResponseWriter, r *http.Request) {
         p = &m.Page{Title: title}
     }
     p.Title = strings.Join(strings.Split(p.Title, "-"), " ")
-    h.renderTemplate(w, "edit", p)
+    component := tmpl.EditPage(p.Title, string(p.Body))
+    component.Render(context.Background(), w)
 }
 
 
@@ -99,10 +103,8 @@ func (h *DefaultHandler) saveHandler(w http.ResponseWriter, r *http.Request) {
 
 func (h *DefaultHandler) listViewHandler(w http.ResponseWriter, r *http.Request) {
     pages := h.ps.LoadAllPages()
-
-    err := templates.ExecuteTemplate(w, "list-view.html", pages); if err != nil {
-        http.Error(w, err.Error(), http.StatusInternalServerError)
-    }
+    component := tmpl.ListView(pages)
+    component.Render(context.Background(), w)
 }
 
 func (h *DefaultHandler) renderTemplate(w http.ResponseWriter, tmpl string, p *m.Page) {

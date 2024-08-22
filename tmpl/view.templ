@@ -1,0 +1,10 @@
+package tmpl
+
+templ ViewPage(title string, body string) {
+    @Wrapper(title) {
+        <h1>{title}</h1>
+        <p>[<a href={templ.URL("/edit/" + title)}>edit</a>]</p>
+        <div>{body}</div>
+        <p>[<a href={templ.URL("/list-view/")}>nazaj na seznam</a>]</p>
+    }
+}
