@@ -18,6 +18,8 @@ const EDIT_PATH = "/edit/"
 const VIEW_PATH = "/view/"
 const SAVE_PATH = "/save/"
 const LIST_VIEW_PATH = "/list-view/"
+const STATIC_ROOT = "./assets"
+const STATIC_PATH = "/assets/"
 
 
 var validPath = regexp.MustCompile("^/(edit|save|view)/([a-zA-Z0-9-čžš]+)$")
@@ -42,8 +44,16 @@ func (h *DefaultHandler) ServeHTTP() {
     http.HandleFunc(SAVE_PATH, h.saveHandler)
     http.HandleFunc(LIST_VIEW_PATH, h.listViewHandler)
 
+    fs := http.FileServer(http.Dir(STATIC_ROOT))
+    http.Handle(STATIC_PATH, http.StripPrefix(STATIC_PATH, fs))
+
     fmt.Println("Server running on port 8000")
+
+
     log.Fatal(http.ListenAndServe(":8000", nil))
+}
+
+func (h *DefaultHandler) ServeStatic() {
 }
 
 
