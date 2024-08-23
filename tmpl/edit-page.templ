@@ -9,11 +9,19 @@ templ EditExplanation(name string, title string, body string) {
             }
         </style>
 
-        <h1>Urejanje { title }</h1>
+        if name == "nova-razlaga" {
+            <h1>Urejanje nove razlage</h1>
+        } else {
+            <h1>Urejanje { title }</h1>
+        }
         <form action={ templ.URL("/save/" + name) }>
             <div>
                 <label for="title">Naslov</label>
-                <textarea name="title" id="title" rows="1" cols="20">{ title }</textarea>
+                if name == "nova-razlaga" {
+                    <textarea name="title" id="title" rows="1" cols="20">Nova razlaga</textarea>
+                } else {
+                    <textarea name="title" id="title" rows="1" cols="20">{ title }</textarea>
+                }
             </div>
             <div>
                 <label for="Body">Razlaga</label>

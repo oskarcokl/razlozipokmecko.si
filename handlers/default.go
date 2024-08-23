@@ -71,6 +71,11 @@ func (h *DefaultHandler) editHandler(w http.ResponseWriter, r *http.Request) {
 
     e, err := h.es.LoadExplanation(name)
     if err != nil {
+        if name != "nova-razlaga" {
+		    http.NotFound(w, r)
+            return
+        }
+
         // if page doesn't exists create one
         e = &m.Explanation{Name: name}
     }

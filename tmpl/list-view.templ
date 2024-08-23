@@ -7,5 +7,7 @@ templ ListView(explanations []m.Explanation) {
         for _, e := range explanations {
             <h2><a href={templ.URL("/view/" + e.Name)}>{e.Title}</a></h2>
         }
+
+        <p>[<a href={templ.URL("/edit/nova-razlaga")}>Dodaj novo razlago</a>]</p>
     }
 }
