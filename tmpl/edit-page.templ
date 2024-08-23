@@ -2,7 +2,7 @@ package tmpl
 
 
 templ EditExplanation(name string, title string, body string) {
-    @Wrapper(title) {
+    @Wrapper(name) {
         <style>
             textarea {
                 resize: none
@@ -23,6 +23,10 @@ templ EditExplanation(name string, title string, body string) {
                 <input type="submit" value="Shrani">
             </div>
         </form>
-        <p>[<a href={templ.URL("/view/" + name)}>nazaj</a>]</p>
+        if title != "" {
+            <p>[<a href={templ.URL("/view/" + name)}>nazaj</a>]</p>
+        } else {
+            <p>[<a href={templ.URL("/list-view/")}>nazaj</a>]</p>
+        }
     }
 }
