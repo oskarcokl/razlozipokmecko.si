@@ -1,0 +1,11 @@
+{
+  "name": "razlozipokmecko.si",
+  "version": "1.0.0",
+  "description": "A site with simple explenations of complex terms",
+  "main": "index.js",
+  "author": "Oskar Čokl",
+  "license": "ISC",
+  "devDependencies": {
+    "tailwindcss": "^3.4.10"
+  }
+}
