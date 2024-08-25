@@ -41,7 +41,7 @@ func ListView(explanations []m.Explanation) templ.Component {
 			}
 			ctx = templ.InitializeContext(ctx)
 			for _, e := range explanations {
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<h2><a href=\"")
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<h2 class=\"text-2xl md:text-3xl mb-3\"><a href=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -57,7 +57,7 @@ func ListView(explanations []m.Explanation) templ.Component {
 				var templ_7745c5c3_Var4 string
 				templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(e.Title)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `tmpl/list-view.templ`, Line: 8, Col: 63}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `tmpl/list-view.templ`, Line: 8, Col: 97}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 				if templ_7745c5c3_Err != nil {
@@ -68,7 +68,7 @@ func ListView(explanations []m.Explanation) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" <p>[<a href=\"")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" <p class=\"text-sm italic\">[<a href=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

@@ -39,7 +39,7 @@ func Wrapper(title string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</title></head><body><header><h1 class=\"text-3xl font-bold underline\">Razlozi po kmecko</h1></header><div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</title></head><body class=\"bg-yellow-50 text-amber-800 font-serif\"><header class=\"my-6\"><img src=\"/assets/images/logo.svg\" class=\"mx-auto sm:size-44 size-36 stroke-amber-800\" alt=\"logo\"><h1 class=\"text-4xl text-center font-bold\">Razlozi po kmecko</h1><hr class=\"border-amber-800 border mx-auto w-4/5 sm:w-[30em] mt-2\"></header><div class=\"md:max-w-sm px-3 md:mx-auto md:px-0\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

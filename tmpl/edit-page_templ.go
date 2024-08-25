@@ -43,19 +43,19 @@ func EditExplanation(name string, title string, body string) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if name == "nova-razlaga" {
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<h1>Urejanje nove razlage</h1>")
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<h1 class=\"text-3xl\">Urejanje nove razlage</h1>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			} else {
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<h1>Urejanje ")
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<h1 class=\"text-3xl\">Urejanje ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var3 string
 				templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(title)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `tmpl/edit-page.templ`, Line: 15, Col: 32}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `tmpl/edit-page.templ`, Line: 15, Col: 49}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 				if templ_7745c5c3_Err != nil {
@@ -75,12 +75,12 @@ func EditExplanation(name string, title string, body string) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"><div><label for=\"title\">Naslov</label> ")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" class=\"mt-3\"><div class=\"mt-4\"><label class=\"leading-6 block text-xl\" for=\"title\">Naslov</label> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if name == "nova-razlaga" {
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<textarea name=\"title\" id=\"title\" rows=\"1\" cols=\"20\">Nova razlaga</textarea>")
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<textarea name=\"title\" id=\"title\" rows=\"1\" class=\"block w-full mt-2 px-3.5 py-2 rounded-md border-0 ring-1 ring-gray-300 ring-inset focus:ring-2 focus:ring-green-400 sm:leading-6\">Nova razlaga</textarea>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -103,25 +103,25 @@ func EditExplanation(name string, title string, body string) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div><label for=\"Body\">Razlaga</label> <textarea name=\"body\" id=\"body\" rows=\"20\" cols=\"80\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div class=\"mt-2\"><label for=\"Body\" class=\"leading-6 block text-xl\">Razlaga</label> <textarea name=\"body\" id=\"body\" rows=\"10\" class=\"block w-full mt-2 px-3.5 py-2 rounded-md border-0 ring-1 ring-gray-300 ring-inset focus:ring-2 focus:ring-green-400 sm:leading-6\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(body)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `tmpl/edit-page.templ`, Line: 28, Col: 74}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `tmpl/edit-page.templ`, Line: 28, Col: 201}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</textarea></div><div><input type=\"submit\" value=\"Shrani\"></div></form>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</textarea></div><div class=\"mt-2\"><input type=\"submit\" value=\"Shrani\" class=\"rounded-md bg-lime-600 px-3.5 py-2 text-slate-100\"></div></form>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if title != "" {
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<p>[<a href=\"")
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<p class=\"text-sm italic\">[<a href=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -135,7 +135,7 @@ func EditExplanation(name string, title string, body string) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			} else {
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<p>[<a href=\"")
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<p class=\"text-sm italic\">[<a href=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

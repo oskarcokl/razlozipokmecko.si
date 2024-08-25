@@ -10,31 +10,31 @@ templ EditExplanation(name string, title string, body string) {
         </style>
 
         if name == "nova-razlaga" {
-            <h1>Urejanje nove razlage</h1>
+            <h1 class="text-3xl">Urejanje nove razlage</h1>
         } else {
-            <h1>Urejanje { title }</h1>
+            <h1 class="text-3xl">Urejanje { title }</h1>
         }
-        <form action={ templ.URL("/save/" + name) }>
-            <div>
-                <label for="title">Naslov</label>
+        <form action={ templ.URL("/save/" + name) } class="mt-3">
+            <div class="mt-4">
+                <label class="leading-6 block text-xl" for="title">Naslov</label>
                 if name == "nova-razlaga" {
-                    <textarea name="title" id="title" rows="1" cols="20">Nova razlaga</textarea>
+                    <textarea name="title" id="title" rows="1" class="block w-full mt-2 px-3.5 py-2 rounded-md border-0 ring-1 ring-gray-300 ring-inset focus:ring-2 focus:ring-green-400 sm:leading-6">Nova razlaga</textarea>
                 } else {
                     <textarea name="title" id="title" rows="1" cols="20">{ title }</textarea>
                 }
             </div>
-            <div>
-                <label for="Body">Razlaga</label>
-                <textarea name="body" id="body" rows="20" cols="80">{ body }</textarea>
+            <div class="mt-2">
+                <label for="Body" class="leading-6 block text-xl">Razlaga</label>
+                <textarea name="body" id="body" rows="10" class="block w-full mt-2 px-3.5 py-2 rounded-md border-0 ring-1 ring-gray-300 ring-inset focus:ring-2 focus:ring-green-400 sm:leading-6">{ body }</textarea>
             </div>
-            <div>
-                <input type="submit" value="Shrani">
+            <div class="mt-2">
+                <input type="submit" value="Shrani" class="rounded-md bg-lime-600 px-3.5 py-2 text-slate-100">
             </div>
         </form>
         if title != "" {
-            <p>[<a href={templ.URL("/view/" + name)}>nazaj</a>]</p>
+            <p class="text-sm italic">[<a href={templ.URL("/view/" + name)}>nazaj</a>]</p>
         } else {
-            <p>[<a href={templ.URL("/list-view/")}>nazaj</a>]</p>
+            <p class="text-sm italic">[<a href={templ.URL("/list-view/")}>nazaj</a>]</p>
         }
     }
 }
