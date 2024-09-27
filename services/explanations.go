@@ -4,16 +4,24 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"os"
 	"strings"
 
 	"github.com/oskarcokl/razlozipokmecko.si/db"
 	m "github.com/oskarcokl/razlozipokmecko.si/models"
+	"github.com/russross/blackfriday/v2"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"gopkg.in/yaml.v2"
 )
 
 type ExplanationService struct {
 	ms *db.MongoStore
+}
+
+type ExplanationMetaData struct {
+    Title string `yaml:"title"`
+    DateCreated string `yaml:"date_created"`
 }
 
 func NewPageService(ms *db.MongoStore) *ExplanationService {
@@ -23,12 +31,28 @@ func NewPageService(ms *db.MongoStore) *ExplanationService {
 
 func (es *ExplanationService) LoadExplanation(name string) (*m.Explanation, error) {
     var result m.Explanation
-    filter := bson.D{{Key: "name", Value: name}}
-    err := es.ms.Coll.FindOne(context.TODO(), filter).Decode(&result)
 
+    data, err := os.ReadFile("./explanations/" + name + ".md")
     if err != nil {
         return nil, err
     }
+
+    parts := strings.SplitN(string(data), "---", 3)
+    if len(parts) < 3 {
+        return nil, fmt.Errorf("invalid markdown format")
+    }
+
+    var metadata ExplanationMetaData
+    err = yaml.Unmarshal([]byte(parts[1]), &metadata)
+    if err != nil {
+        return nil, err
+    }
+
+    body := blackfriday.Run([]byte(parts[2]))
+
+    result.Body = body
+    result.Name = name
+    result.Title = metadata.Title
 
     return &result, nil
 }
