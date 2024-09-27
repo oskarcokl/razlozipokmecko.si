@@ -6,6 +6,6 @@ templ ViewExplanation(name string, title string, body string) {
         <div class="sm:text-xl my-2">
             @templ.Raw(body)
         </div>
-        <p class="text-sm italic">[<a href={templ.URL("/list-view/")}>nazaj na seznam</a>] [<a href={templ.URL("/edit/" + name)}>uredi</a>]</p>
+        <p class="text-sm italic">[<a href={templ.URL("/list-view/")}>nazaj na seznam</a>]</p>
     }
 }

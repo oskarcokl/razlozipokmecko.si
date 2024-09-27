@@ -113,8 +113,7 @@ func (h *DefaultHandler) saveHandler(w http.ResponseWriter, r *http.Request) {
 
 
 func (h *DefaultHandler) listViewHandler(w http.ResponseWriter, r *http.Request) {
-    explanations := h.es.LoadAllExplanations()
-    component := tmpl.ListView(explanations)
+    component := tmpl.ListView(h.es.Explanations)
     component.Render(context.Background(), w)
 }
 

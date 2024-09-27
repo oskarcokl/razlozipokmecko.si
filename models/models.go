@@ -5,3 +5,8 @@ type Explanation struct {
     Title string
     Body []byte
 }
+
+type ExplanationMetaData struct {
+    Title string `yaml:"title"`
+    DateCreated string `yaml:"date_created"`
+}

@@ -5,56 +5,44 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/oskarcokl/razlozipokmecko.si/db"
+	markdown_parser "github.com/oskarcokl/razlozipokmecko.si/internal"
 	m "github.com/oskarcokl/razlozipokmecko.si/models"
-	"github.com/russross/blackfriday/v2"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"gopkg.in/yaml.v2"
 )
 
 type ExplanationService struct {
 	ms *db.MongoStore
+    Explanations []*m.Explanation
 }
 
-type ExplanationMetaData struct {
-    Title string `yaml:"title"`
-    DateCreated string `yaml:"date_created"`
-}
 
 func NewPageService(ms *db.MongoStore) *ExplanationService {
-	return &ExplanationService{ms: ms}
+    var explanations []*m.Explanation
+
+	es := ExplanationService{
+        ms: ms,
+        Explanations: explanations,
+    }
+
+    es.LoadAllExplanations()
+
+    return &es
 }
 
 
 func (es *ExplanationService) LoadExplanation(name string) (*m.Explanation, error) {
-    var result m.Explanation
-
-    data, err := os.ReadFile("./explanations/" + name + ".md")
-    if err != nil {
-        return nil, err
+    for _, e := range(es.Explanations) {
+        if e.Name == name {
+            return e, nil
+        }
     }
 
-    parts := strings.SplitN(string(data), "---", 3)
-    if len(parts) < 3 {
-        return nil, fmt.Errorf("invalid markdown format")
-    }
-
-    var metadata ExplanationMetaData
-    err = yaml.Unmarshal([]byte(parts[1]), &metadata)
-    if err != nil {
-        return nil, err
-    }
-
-    body := blackfriday.Run([]byte(parts[2]))
-
-    result.Body = body
-    result.Name = name
-    result.Title = metadata.Title
-
-    return &result, nil
+    return nil, fmt.Errorf("no explanation with name exists");
 }
 
 
@@ -93,17 +81,49 @@ func (es *ExplanationService) SaveExplanation(e *m.Explanation) (*m.Explanation,
 }
 
 
-func (es *ExplanationService) LoadAllExplanations() ([]m.Explanation) {
-    cur, err := es.ms.Coll.Find(context.TODO(), bson.D{})
+func (es *ExplanationService) LoadAllExplanations() (error) {
+    dirPath := "./explanations"
+
+    err := filepath.Walk(dirPath, func(path string, info os.FileInfo, err error) error {
+        if err != nil {
+            return err
+        }
+
+        if info.IsDir() {
+            return nil
+        }
+
+        data, err := os.ReadFile(path)
+        if err != nil {
+            return err
+        }
+
+        parts := strings.SplitN(string(data), "---", 3)
+        if len(parts) < 3 {
+            return fmt.Errorf("invalid markdown format")
+        }
+
+        metadata, err := markdown_parser.ParseMetadata(parts[1])
+        if err != nil {
+            return err
+        }
+
+        body := markdown_parser.ParseBody(parts[2])
+
+        explanation := m.Explanation{
+            Body: body,
+            Name: strings.TrimSuffix(info.Name(), ".md"),
+            Title: metadata.Title,
+        }
+
+        es.Explanations = append(es.Explanations, &explanation)
+
+        return nil
+    })
 
     if err != nil {
-        log.Fatal(err)
+        return err
     }
 
-    var results []m.Explanation
-    if err = cur.All(context.TODO(), &results); err != nil {
-        log.Fatal(err)
-    }
-
-    return results
+    return nil
 }
